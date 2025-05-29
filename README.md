@@ -2,20 +2,20 @@
 
 ## Start the server
 
-``bash
+```bash
 cargo run
-``
+```
 
 ## Test with curl or Postman
 
 ### 📥 Add a block
 
-``bash
+```bash
 curl -X POST http://localhost:8080/mine -H "Content-Type: application/json" -d '{"data": "Your DATA !"}'
-``
+```
 
 ### 📤 View all blocks
 
-``bash
+```bash
 curl http://localhost:8080/blocks
-``
+```
