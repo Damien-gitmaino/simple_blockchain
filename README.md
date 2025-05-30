@@ -18,4 +18,4 @@ curl -X POST http://localhost:8080/mine -H "Content-Type: application/json" -d '
 
 ```bash
 curl http://localhost:8080/blocks
-```
+```# simple_blockchain
