@@ -24,15 +24,15 @@ struct TxSign {
 
 #[derive(Serialize)]
 struct KeyPairResponse {
-    secretKey: SecretKey,
-    publicKey: PublicKey,
+    secret_key: SecretKey,
+    public_key: PublicKey,
 }
 
 async fn get_keypair() -> impl Responder {
     let (secret_key, public_key) = key::generate_keypair();
     let response = KeyPairResponse {
-        secretKey: secret_key,
-        publicKey: public_key,
+        secret_key,
+        public_key,
     };
 
     HttpResponse::Ok().json(response)
@@ -43,7 +43,7 @@ async fn get_blocks(data: web::Data<AppState>) -> impl Responder {
     HttpResponse::Ok().json(blockchain.get_chain())
 }
 
-async fn sign_tx(data: web::Data<AppState>, sign: web::Json<TxSign>) -> impl Responder {
+async fn sign_tx(_data: web::Data<AppState>, sign: web::Json<TxSign>) -> impl Responder {
     let sec_key = SecretKey::from_str(&sign.private_key).unwrap();
     let signed_tx = sign_transaction(&sign.tx, &sec_key);
     HttpResponse::Ok().json(signed_tx)

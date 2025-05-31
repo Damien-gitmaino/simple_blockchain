@@ -28,21 +28,9 @@ impl Blockchain {
     pub fn get_blocks(&self) -> &Vec<Block> {
         &self.chain
     }
-    
-    pub fn get_difficulty(&self) -> u64 {
-        self.difficulty
-    }
-    
-    pub fn get_transaction(&self) -> usize {
-        self.mempool.len()
-    }
 
     pub fn add_transaction(&mut self, tx: Transaction) {
         self.mempool.push(tx);
-    }
-
-    pub fn get_mempool(&self) -> &Vec<Transaction> {
-        &self.mempool
     }
 
     pub fn mine_block(&mut self) -> String {

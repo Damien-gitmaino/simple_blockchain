@@ -19,7 +19,7 @@ fn hash_transaction(tx: &Transaction) -> [u8; 32] {
 pub fn sign_transaction(tx: &Transaction, secret_key: &SecretKey) -> Signature {
     let secp = Secp256k1::new();
     let hash = hash_transaction(tx);
-    let message = Message::from_slice(&hash).expect("32 bytes");
+    let message = Message::from_digest_slice(&hash).expect("32 bytes");
     secp.sign_ecdsa(&message, secret_key)
 }
 
@@ -30,13 +30,12 @@ pub fn verify_transaction_signature(
 ) -> bool {
     let secp = Secp256k1::new();
     let hash = hash_transaction(tx);
-    let message = Message::from_slice(&hash).expect("32 bytes");
+    let message = Message::from_digest_slice(&hash).expect("32 bytes");
     secp.verify_ecdsa(&message, signature, public_key).is_ok()
 }
 
 #[cfg(test)]
 mod tests {
-    use serde::Serialize;
     use super::*;
     use crate::transaction::Transaction;
 
@@ -46,7 +45,7 @@ mod tests {
 
     #[test]
     fn test_generate_keypair_validity() {
-        let (secret_key, public_key) = generate_keypair();
+        let (_secret_key, public_key) = generate_keypair();
         
         assert_eq!(public_key.serialize().len(), 33);
     }
