@@ -33,3 +33,62 @@ pub fn verify_transaction_signature(
     let message = Message::from_slice(&hash).expect("32 bytes");
     secp.verify_ecdsa(&message, signature, public_key).is_ok()
 }
+
+#[cfg(test)]
+mod tests {
+    use serde::Serialize;
+    use super::*;
+    use crate::transaction::Transaction;
+
+    fn mock_transaction() -> Transaction {
+        Transaction::new("Alice".to_string(), "Bob".to_string(), 100.0)
+    }
+
+    #[test]
+    fn test_generate_keypair_validity() {
+        let (secret_key, public_key) = generate_keypair();
+        
+        assert_eq!(public_key.serialize().len(), 33);
+    }
+
+    #[test]
+    fn test_sign_and_verify_transaction_success() {
+        let tx = mock_transaction();
+        let (secret_key, public_key) = generate_keypair();
+        let signature = sign_transaction(&tx, &secret_key);
+
+        let is_valid = verify_transaction_signature(&tx, &signature, &public_key);
+        assert!(is_valid);
+    }
+
+    #[test]
+    fn test_verify_transaction_signature_failure_wrong_key() {
+        let tx = mock_transaction();
+        let (secret_key1, _) = generate_keypair();
+        let (_, public_key2) = generate_keypair(); // Wrong key
+
+        let signature = sign_transaction(&tx, &secret_key1);
+        let is_valid = verify_transaction_signature(&tx, &signature, &public_key2);
+
+        assert!(!is_valid);
+    }
+
+    #[test]
+    fn test_verify_transaction_signature_failure_modified_transaction() {
+        let original_tx = mock_transaction();
+        let modified_tx = Transaction::new("Alice".to_string(), "Charlie".to_string(), 100.0);
+        let (secret_key, public_key) = generate_keypair();
+
+        let signature = sign_transaction(&original_tx, &secret_key);
+        let is_valid = verify_transaction_signature(&modified_tx, &signature, &public_key);
+
+        assert!(!is_valid);
+    }
+
+    #[test]
+    fn test_hash_transaction_length() {
+        let tx = mock_transaction();
+        let hash = super::hash_transaction(&tx);
+        assert_eq!(hash.len(), 32); // SHA-256 = 32 bytes
+    }
+}
